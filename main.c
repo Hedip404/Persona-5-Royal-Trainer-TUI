@@ -6,7 +6,7 @@
 #include <TlHelp32.h>
 
 // 0x2A0 between thieves
-#define JOKER_HEALTH 0x29E8EAC // 4 space between HEALTH and CP
+#define JOKER_HEALTH 0x29E8EAC 
 #define SKULL_HEALTH 0x29E914C
 #define MONA_HEALTH 0x29E93EC
 #define PANTHER_HEALTH 0x29E968C
@@ -37,6 +37,7 @@ int main() {
 
     printf("Persona 5 R process found!\n");
 
+    // 4 space between HEALTH and CP
     Thief thieves[6] = {
         { "Joker", 0, 0, baseAddr + JOKER_HEALTH, baseAddr + JOKER_HEALTH + 0x4 },
         { "Skull", 0, 0, baseAddr + SKULL_HEALTH, baseAddr + SKULL_HEALTH + 0x4 },
@@ -48,6 +49,7 @@ int main() {
 
     size_t numberOfBytesRead;
     int spaceBetween = 10;
+    int leftPadding = 30;
     printf("\e[?25l");
     while(1) {
         printf("\e[H\e[0J");
@@ -55,13 +57,12 @@ int main() {
             ReadProcessMemory(hProcess, (void*)thieves[i].healthPtr, &thieves[i].healthValue, sizeof(thieves[i].healthValue), &numberOfBytesRead);
             ReadProcessMemory(hProcess, (void*)thieves[i].cpointsPtr, &thieves[i].cpointsValue, sizeof(thieves[i].cpointsValue), &numberOfBytesRead);
 
-            printf("\e[1;%dH%s", (i*spaceBetween)+1, thieves[i].name);
-            printf("\e[2;%dH\e[38;5;40m%d\e[0m", (i*spaceBetween)+1, thieves[i].healthValue);
-            printf("\e[3;%dH\e[38;5;171m%d\e[0m", (i*spaceBetween)+1, thieves[i].cpointsValue);
-            printf("\e[4;%dH%llX\n", (i*spaceBetween) + 1, thieves[i].healthPtr);
+            printf("\e[1;%dH%s", (i*spaceBetween) + leftPadding, thieves[i].name);
+            printf("\e[2;%dH\e[38;5;40m%d\e[0m", (i*spaceBetween) + leftPadding, thieves[i].healthValue);
+            printf("\e[3;%dH\e[38;5;171m%d\e[0m", (i*spaceBetween) + leftPadding, thieves[i].cpointsValue);
         }
 
-        Sleep(20);
+        Sleep(33);
     }
 
     return 0;
