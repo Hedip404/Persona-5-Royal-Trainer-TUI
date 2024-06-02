@@ -31,7 +31,7 @@ int main() {
     uintptr_t baseAddr = GetModuleBaseAddress(pid, "P5R.exe");
 
     if(hProcess == INVALID_HANDLE_VALUE) {
-        printf("%s\n", "Un probleme est survenu");
+        printf("%s\n", "Couldn't find Persona 5 Royal process, exiting now.");
         return 1;
     }
 
