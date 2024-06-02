@@ -5,13 +5,11 @@
 #include <windows.h>
 #include <TlHelp32.h>
 
-// 0x540 space
-// 0xD20 space
-// 0x1500 space
-#define JOKER_HEALTH  0x29E8EAC // 4 space between HEALTH and CP
-#define JOKER_CPOINTS 0x29E8EB0
+// 0x2A0 between thieves
+#define JOKER_HEALTH 0x29E8EAC // 4 space between HEALTH and CP
+#define SKULL_HEALTH 0x29E914C
 #define MONA_HEALTH 0x29E93EC
-#define MONA_CPOINTS 0x29E93E8
+#define PANTHER_HEALTH 0x29E968C
 #define QUEEN_HEALTH 0x29E9BCC
 #define CROW_HEALTH 0x29EA3AC
 
@@ -39,9 +37,11 @@ int main() {
 
     printf("Persona 5 R process found!\n");
 
-    Thief thieves[4] = {
+    Thief thieves[6] = {
         { "Joker", 0, 0, baseAddr + JOKER_HEALTH, baseAddr + JOKER_HEALTH + 0x4 },
+        { "Skull", 0, 0, baseAddr + SKULL_HEALTH, baseAddr + SKULL_HEALTH + 0x4 },
         { "Mona",  0, 0, baseAddr + MONA_HEALTH,  baseAddr + MONA_HEALTH  + 0x4 },
+        { "Panther",  0, 0, baseAddr + PANTHER_HEALTH,  baseAddr + PANTHER_HEALTH  + 0x4 },
         { "Queen", 0, 0, baseAddr + QUEEN_HEALTH, baseAddr + QUEEN_HEALTH + 0x4 },
         { "Crow",  0, 0, baseAddr + CROW_HEALTH,  baseAddr + CROW_HEALTH  + 0x4 },
     };
@@ -51,14 +51,14 @@ int main() {
     printf("\e[?25l");
     while(1) {
         printf("\e[H\e[0J");
-        for(int i = 0; i < 4; i++) {
+        for(int i = 0; i < 6; i++) {
             ReadProcessMemory(hProcess, (void*)thieves[i].healthPtr, &thieves[i].healthValue, sizeof(thieves[i].healthValue), &numberOfBytesRead);
             ReadProcessMemory(hProcess, (void*)thieves[i].cpointsPtr, &thieves[i].cpointsValue, sizeof(thieves[i].cpointsValue), &numberOfBytesRead);
 
             printf("\e[1;%dH%s", (i*spaceBetween)+1, thieves[i].name);
             printf("\e[2;%dH\e[38;5;40m%d\e[0m", (i*spaceBetween)+1, thieves[i].healthValue);
             printf("\e[3;%dH\e[38;5;171m%d\e[0m", (i*spaceBetween)+1, thieves[i].cpointsValue);
-
+            printf("\e[4;%dH%llX\n", (i*spaceBetween) + 1, thieves[i].healthPtr);
         }
 
         Sleep(20);
