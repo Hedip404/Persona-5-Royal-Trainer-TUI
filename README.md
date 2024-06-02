@@ -1,11 +1,10 @@
 # Persona 5 Royal trainer TUI - for windows
----
+
 This is a terminal version of the external trainer I'm currently working on as a way to better understand how to read and overwrite memory
 
 It's written in plain C and uses Windows API.
 
 
----
 
 ## Build
 
@@ -16,13 +15,11 @@ zig cc -s -o .\target\main.exe .\main.c
 ```
 
 
----
 
 ## Contribute
 
 Feel free to contribute to the project.
 
----
 
 ## Licensing
 
