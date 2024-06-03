@@ -1,4 +1,5 @@
 #define _X86_ 1
+#include <conio.h>
 #include <stdio.h>
 #include <handleapi.h>
 #include <memoryapi.h>
@@ -50,19 +51,55 @@ int main() {
     size_t numberOfBytesRead;
     int spaceBetween = 10;
     int leftPadding = 30;
+    int hoveredThief = 0;
+    char screenBuf[5096];
     printf("\e[?25l");
+    printf("\e[H\e[0J");
+    int tick = 0;
     while(1) {
-        printf("\e[H\e[0J");
+        int lastStored = 0;
+
         for(int i = 0; i < 6; i++) {
             ReadProcessMemory(hProcess, (void*)thieves[i].healthPtr, &thieves[i].healthValue, sizeof(thieves[i].healthValue), &numberOfBytesRead);
             ReadProcessMemory(hProcess, (void*)thieves[i].cpointsPtr, &thieves[i].cpointsValue, sizeof(thieves[i].cpointsValue), &numberOfBytesRead);
 
-            printf("\e[1;%dH%s", (i*spaceBetween) + leftPadding, thieves[i].name);
-            printf("\e[2;%dH\e[38;5;40m%d\e[0m", (i*spaceBetween) + leftPadding, thieves[i].healthValue);
-            printf("\e[3;%dH\e[38;5;171m%d\e[0m", (i*spaceBetween) + leftPadding, thieves[i].cpointsValue);
+            char *color;
+            if(hoveredThief == i) {
+                color = "\e[48;5;52m";
+            } else {
+                color = "\e[48;5;232m";
+            }
+
+            lastStored += snprintf((screenBuf + lastStored), sizeof(screenBuf), "\e[1;1H%d%s\e[1;%dH%-8s\e[2;%dH\e[38;5;40m%-8d\e[3;%dH\e[38;5;171m%-8d\e[0m", tick, color, (i*spaceBetween) + leftPadding, thieves[i].name, (i*spaceBetween) + leftPadding, thieves[i].healthValue, (i*spaceBetween) + leftPadding, thieves[i].cpointsValue);
+            //printf("\e[45m");
+            //printf("\e[1;%dH%s", (i*spaceBetween) + leftPadding, thieves[i].name);
+            //printf("\e[2;%dH\e[38;5;40m%d\e[0m", (i*spaceBetween) + leftPadding, thieves[i].healthValue);
+            //printf("\e[3;%dH\e[38;5;171m%d\e[0m", (i*spaceBetween) + leftPadding, thieves[i].cpointsValue);
+            
         }
 
-        Sleep(33);
+        
+        if(_kbhit()) {
+            int c = _getch();
+            if(c == 224) {
+                switch (_getch()) {
+                    case 72:
+                        break;
+                    case 80:
+                        break;
+                    case 77:
+                        hoveredThief = (hoveredThief + 1) % 6;
+                        break;
+                    case 75:
+                        hoveredThief = hoveredThief - 1 + ( 6 * !hoveredThief);
+                        break;
+
+                }
+            }
+        }
+    
+        printf("%s", screenBuf);
+        tick++;
     }
 
     return 0;
